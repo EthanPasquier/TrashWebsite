@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Explore the Trash of the Internet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .animated-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            z-index: -1;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        input[type="url"] {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        button {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #357ABD;
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #4A90E2;
+            font-weight: bold;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-background"></div>
+    <div class="container">
+        <style>
+            .container {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+            .container:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            }
+        </style>
+        <div class="logo">Trash Website</div>
+        <h1>Explore the Trash of the Internet</h1>
+        <p class="description">Enter any URL to discover a new dimension of the internet.</p>
+        <form onsubmit="event.preventDefault(); callFlaskFunction();">
+            <div class="input-group">
+                <input type="url" name="url" placeholder="https://example.com" required>
+                <button type="submit">Continue</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function callFlaskFunction() {
+            const urlInput = document.querySelector('input[name="url"]');
+            const url = urlInput.value;
+            const endpoint = `http://localhost:5000/flask-function?url=${encodeURIComponent(url)}`;
+            
+            // Make a request to the Flask function
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data
+                    console.log(data);
+                    // Redirect to ArticlePageTrashWebsite.html with the returned data as variables
+                    const id = data.id;
+                    window.location.href = `ArticlePageTrashWebsite.html?id=${id}`;
+                })
+                .catch(error => {
+                    // Handle any errors
+                    console.error(error);
+                });
+            }
+        
+        function createParticles() {
+            const background = document.querySelector('.animated-background');
+            const particleCount = 50;
+            const colors = ['#4A90E2', '#54E2D2', '#F7D842', '#F2B5D4', '#7ED321'];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 15 + 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = color;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animation = `float ${Math.random() * 15 + 5}s linear infinite`;
+                
+                background.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+    </script>
+</body></html>

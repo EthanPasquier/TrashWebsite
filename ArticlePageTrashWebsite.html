@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Explore the Web of Possibilities</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 80vh;
+            transition: all 0.3s ease;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .section {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        h2 {
+            color: #4A90E2;
+            margin-top: 0;
+        }
+        
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background-color: #4A90E2;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 40px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voici votre article de m**** que vous m'avez demandé</h1>
+        <div id="sections"></div>
+    </div>
+
+    <script>
+        // Function to fetch data from the Flask API
+        function fetchData(id) {
+            const endpoint = `http://localhost:5000/api/data/${id}`;
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    createSections(data);
+                    createModals(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        // Function to create sections dynamically
+        function createSections(data) {
+        const sectionsContainer = document.getElementById('sections');
+        Object.keys(data).forEach((key, index) => {
+            if (key !== 'id') {
+                const section = document.createElement('div');
+                section.className = 'section';
+                section.onclick = () => openModal(`modal${index}`);
+                section.innerHTML = `
+                    <h2>${index + 1}. ${key}</h2>
+                    <p>${data[key].substring(0, 50)}...</p>
+                `;
+                sectionsContainer.appendChild(section);
+            }
+        });
+    }
+
+
+        // Function to create modals dynamically
+        function createModals(data) {
+            const body = document.body;
+            Object.keys(data).forEach((key, index) => {
+                if (key !== 'id') {
+                    const modal = document.createElement('div');
+                    modal.id = `modal${index}`;
+                    modal.className = 'modal';
+                    modal.innerHTML = `
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('modal${index}')">×</span>
+                            <h2>${key}</h2>
+                            <p>${data[key]}</p>
+                        </div>
+                    `;
+                    body.appendChild(modal);
+                }
+            });
+        }
+
+        // Function to open a modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "block";
+        }
+
+        // Function to close a modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // Close modal if clicked outside of it
+        window.onclick = function(event) {
+            if (event.target.className === "modal") {
+                event.target.style.display = "none";
+            }
+        }
+
+        // Get the id from URL and fetch data
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                fetchData(id);
+            }
+        }
+    </script>
+</body>
+</html>
